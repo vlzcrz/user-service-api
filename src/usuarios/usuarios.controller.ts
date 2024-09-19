@@ -33,4 +33,9 @@ export class UsuariosController {
   createEstudiante(@Body() createEstudianteDto: CreateEstudianteDto) {
     return this.usuariosService.createEstudiante(createEstudianteDto)
   }
+
+  @Get('Correo/:correo?')
+  findCorreo(@Param('correo') correo?: string) {
+    return this.usuariosService.findUser(correo)
+  }
 }

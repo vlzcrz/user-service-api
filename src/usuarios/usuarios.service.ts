@@ -9,15 +9,40 @@ import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 @Injectable()
 export class UsuariosService {
 
-  
   constructor(
     @InjectRepository(Usuario)
     private usuarioRepository : Repository<Usuario>
   ) {}
 
+  async findUser(correo?: string) {
+    if(!correo)
+      throw new BadRequestException('Valor correo en blanco, ingrese un correo valido');
+    
+    const queryBuilder = this.usuarioRepository.createQueryBuilder("usuario")
+    const usuarioExist = await queryBuilder.select(["usuario.correo", "usuario.contrasena"]).where('usuario.correo = :correo', {correo: correo}).getExists()
+    if(!usuarioExist)
+      throw new NotFoundException('El correo ingresado no existe')
+
+    const usuario = await queryBuilder.select(["usuario.correo", "usuario.contrasena"]).where('usuario.correo = :correo', {correo: correo}).getOne()
+    return usuario
+
+  }
+
   async findDocentes(uuid?: string) {
+    const queryBuilder = this.usuarioRepository.createQueryBuilder("usuario")
     if(uuid) {
-      const queryBuilder = this.usuarioRepository.createQueryBuilder("usuario")
+      
+      const docenteExist = await queryBuilder
+      .select(["usuario.uuid", "usuario.nombre", "usuario.apellido", "usuario.correo"])
+      .where(' usuario.uuid = :uuid AND usuairo.rol = :rol', {
+        uuid: uuid,
+        rol: 'Docente'
+      })
+      .getExists()
+
+      if(!docenteExist)
+        throw new NotFoundException('El docente con la uuid asociada no existe')
+      
       const docente = await queryBuilder
       .select(["usuario.uuid", "usuario.nombre", "usuario.apellido", "usuario.correo"])
       .where(' usuario.uuid = :uuid AND usuairo.rol = :rol', {
@@ -25,10 +50,10 @@ export class UsuariosService {
         rol: 'Docente'
       })
       .getOne()
+
       return docente
     }
 
-    const queryBuilder = this.usuarioRepository.createQueryBuilder("usuario")
     const docenteList = await queryBuilder
     .select(["usuario.uuid", "usuario.nombre", "usuario.apellido", "usuario.correo"])
     .where(' rol = :rol', {
@@ -40,17 +65,28 @@ export class UsuariosService {
   }
 
   async findEstudiantes(uuid?: string) {
+    const queryBuilder = this.usuarioRepository.createQueryBuilder("usuario")
     if(uuid) {
-      const queryBuilder = this.usuarioRepository.createQueryBuilder("usuario")
+      const estudianteExist = await queryBuilder
+        .select(["usuario.uuid","usuario.nombre", "usuario.apellido", "usuario.correo"])
+        .where( 'usuario.rol = :rol AND usuario.uuid = :uuid', {
+          uuid: uuid,
+          rol: 'Estudiante'
+        }).getExists()
+      
+      if(!estudianteExist)
+        throw new NotFoundException('El estudiante con la uuid asociada no existe')
+
       const estudiante = await queryBuilder
         .select(["usuario.uuid","usuario.nombre", "usuario.apellido", "usuario.correo"])
         .where( 'usuario.rol = :rol AND usuario.uuid = :uuid', {
           uuid: uuid,
           rol: 'Estudiante'
         }).getOne()
+
       return estudiante
     }
-    const queryBuilder = this.usuarioRepository.createQueryBuilder("usuario")
+
     const estudianteList = await queryBuilder.
       select(['usuario.uuid','usuario.nombre', 'usuario.apellido', 'usuario.correo'])
       .where( 'usuario.rol = :rol', { rol: 'Estudiante'} )
