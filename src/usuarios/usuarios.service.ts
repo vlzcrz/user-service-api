@@ -132,6 +132,13 @@ export class UsuariosService {
       throw new BadRequestException('Correo electronico en uso')
     }
 
-    return estudiante
+    const createEstudianteResponse = {
+      uuid_estudiante: estudiante.uuid,
+      nombre: estudiante.nombre,
+      apellido: estudiante.apellido,
+      correo: estudiante.correo,
+    }
+
+    return createEstudianteResponse
   }
 }
