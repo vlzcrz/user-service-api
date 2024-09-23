@@ -94,17 +94,50 @@ export class UsuariosService {
     return estudianteList
   }
 
-  async update(uuid: string, updateUsuarioDto: UpdateUsuarioDto) {
+  async updateEstudiante(uuid: string, updateUsuarioDto: UpdateUsuarioDto) {
+
+    const usuario = await this.usuarioRepository.findOne({ where: { uuid } });
+
+    if(!usuario || usuario.rol !== 'Estudiante')
+      throw new NotFoundException(`No se encontro al estudiante con uuid: ${uuid}`)
+
     const updateUsuario = await this.usuarioRepository.preload({
       uuid: uuid,
       ...updateUsuarioDto
     })
 
-    if(!updateUsuario)
-      throw new NotFoundException(`No se encontro al usuario con uuid: ${uuid}`)
+    await this.usuarioRepository.save(updateUsuario)
+    const updateResponse = {
+      uuid_estudiante: updateUsuario.uuid,
+      nombre: updateUsuarioDto.nombre,
+      apellido: updateUsuarioDto.apellido,
+      correo: updateUsuarioDto.correo
+    }
+    
+    return updateResponse;
+  }
+
+  async updateDocente(uuid: string, updateUsuarioDto: UpdateUsuarioDto) {
+
+    const docente = await this.usuarioRepository.findOne({ where: { uuid} })
+
+    if(!docente || docente.rol !== 'Docente')
+      throw new NotFoundException(`No se encontro al docente con uuid: ${uuid}`)
+
+    const updateUsuario = await this.usuarioRepository.preload({
+      uuid: uuid,
+      ...updateUsuarioDto
+    })
+
+    
 
     await this.usuarioRepository.save(updateUsuario)
-    return updateUsuario;
+    const updateResponse = {
+      nombre: updateUsuarioDto.nombre,
+      apellido: updateUsuarioDto.apellido,
+      correo: updateUsuarioDto.correo
+    }
+    return updateResponse;
   }
 
   async createDocente(createDocenteDto: CreateDocenteDto) {

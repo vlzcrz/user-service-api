@@ -10,18 +10,23 @@ export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
 
   @Get('Docentes/:uuid?')
-  findDocentes(@Param('uuid') uuid?: string) {
+  findDocentes(@Param('uuid', ParseUUIDPipe) uuid?: string) {
     return this.usuariosService.findDocentes(uuid);
   }
 
   @Get('Estudiantes/:uuid?')
-  findEstudiantes(@Param('uuid') uuid?: string) {
+  findEstudiantes(@Param('uuid', ParseUUIDPipe) uuid?: string) {
     return this.usuariosService.findEstudiantes(uuid)
   }
 
-  @Patch('EditarUsuario/:uuid')
-  update(@Param('uuid', ParseUUIDPipe ) uuid: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuariosService.update(uuid, updateUsuarioDto);
+  @Patch('EditarEstudiante/:uuid')
+  updateEstudiante(@Param('uuid', ParseUUIDPipe ) uuid: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
+    return this.usuariosService.updateEstudiante(uuid, updateUsuarioDto);
+  }
+
+  @Patch('EditarDocente/:uuid')
+  updateDocente(@Param('uuid', ParseUUIDPipe ) uuid: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
+    return this.usuariosService.updateDocente(uuid, updateUsuarioDto);
   }
 
   @Post('CrearDocente')
