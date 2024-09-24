@@ -10,12 +10,12 @@ export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
 
   @Get('Docentes/:uuid?')
-  findDocentes(@Param('uuid', ParseUUIDPipe) uuid?: string) {
+  findDocentes(@Param('uuid') uuid?: string) {
     return this.usuariosService.findDocentes(uuid);
   }
 
   @Get('Estudiantes/:uuid?')
-  findEstudiantes(@Param('uuid', ParseUUIDPipe) uuid?: string) {
+  findEstudiantes(@Param('uuid') uuid?: string) {
     return this.usuariosService.findEstudiantes(uuid)
   }
 
