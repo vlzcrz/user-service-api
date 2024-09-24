@@ -30,7 +30,7 @@ export class UsuariosService {
 
   async findDocentes(uuid?: string) {
     const queryBuilder = this.usuarioRepository.createQueryBuilder("usuario")
-    if(uuid) {
+    if(uuid && typeof uuid === 'string') {
       
       const docenteExist = await queryBuilder
       .select(["usuario.uuid", "usuario.nombre", "usuario.apellido", "usuario.correo"])
@@ -66,7 +66,7 @@ export class UsuariosService {
 
   async findEstudiantes(uuid?: string) {
     const queryBuilder = this.usuarioRepository.createQueryBuilder("usuario")
-    if(uuid) {
+    if(uuid && typeof uuid === 'string') {
       const estudianteExist = await queryBuilder
         .select(["usuario.uuid","usuario.nombre", "usuario.apellido", "usuario.correo"])
         .where( 'usuario.rol = :rol AND usuario.uuid = :uuid', {
