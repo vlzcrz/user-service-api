@@ -5,6 +5,7 @@ import { Usuario } from './entities/usuario.entity';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { CreateDocenteDto } from './dto/create-docente.dto';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
+import { validate as uuidValidate, version as uuidVersion } from 'uuid';
 
 @Injectable()
 export class UsuariosService {
@@ -29,12 +30,17 @@ export class UsuariosService {
   }
 
   async findDocentes(uuid?: string) {
+
+    if (uuid && (!uuidValidate(uuid) || uuidVersion(uuid) !== 4)) {
+      throw new BadRequestException('No es un formato uuid v4 valido');
+    }
+
     const queryBuilder = this.usuarioRepository.createQueryBuilder("usuario")
-    if(uuid && typeof uuid === 'string') {
+    if(uuid) {
       
       const docenteExist = await queryBuilder
       .select(["usuario.uuid", "usuario.nombre", "usuario.apellido", "usuario.correo"])
-      .where(' usuario.uuid = :uuid AND usuairo.rol = :rol', {
+      .where(' usuario.uuid = :uuid AND usuario.rol = :rol', {
         uuid: uuid,
         rol: 'Docente'
       })
@@ -45,7 +51,7 @@ export class UsuariosService {
       
       const docente = await queryBuilder
       .select(["usuario.uuid", "usuario.nombre", "usuario.apellido", "usuario.correo"])
-      .where(' usuario.uuid = :uuid AND usuairo.rol = :rol', {
+      .where(' usuario.uuid = :uuid AND usuario.rol = :rol', {
         uuid: uuid,
         rol: 'Docente'
       })
@@ -65,8 +71,13 @@ export class UsuariosService {
   }
 
   async findEstudiantes(uuid?: string) {
+
+    if (uuid && (!uuidValidate(uuid) || uuidVersion(uuid) !== 4)) {
+      throw new BadRequestException('No es un formato uuid v4 valido');
+    }
+
     const queryBuilder = this.usuarioRepository.createQueryBuilder("usuario")
-    if(uuid && typeof uuid === 'string') {
+    if(uuid) {
       const estudianteExist = await queryBuilder
         .select(["usuario.uuid","usuario.nombre", "usuario.apellido", "usuario.correo"])
         .where( 'usuario.rol = :rol AND usuario.uuid = :uuid', {
