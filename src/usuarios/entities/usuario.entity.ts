@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid'
 export class Usuario {
 
     @PrimaryGeneratedColumn('uuid')
-    uuid: uuid
+    uuid: string
 
     @Column()
     nombre: string
